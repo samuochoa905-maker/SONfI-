@@ -191,10 +191,64 @@
                     height: 48vh;
                 }
             }
+
+            /* Efecto de burbuja al pasar el cursor */
+            button {
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                position: relative;
+            }
+
+            /* El botón crece al pasar el cursor */
+            button:hover {
+                transform: scale(1.10);
+                box-shadow: 0 7px 15px rgba(255, 20, 120, 0.3);
+            }
+
+            /* El botón se encoge al pulsarlo */
+            button:active {
+                transform: scale(0.85);
+            }
+
+            /* Burbujitas que aparecen al pulsar */
+            .burbuja {
+                position: fixed;
+                pointer-events: none;
+                z-index: 9999;
+                border: 2px solid #ff69a6;
+                border-radius: 50%;
+                animation: explotarBurbuja 0.6s ease-out forwards;
+            }
+
+            @keyframes explotarBurbuja {
+                0% {
+                    transform: scale(0.2);
+                    opacity: 1;
+                }
+
+                100% {
+                    transform: scale(2.5);
+                    opacity: 0;
+                }
+            }
         </style>
     </head>
 
     <body>
+
+        <audio id="musica" loop>
+            <source src="./Wii Sports - Title (HQ).mp3" type="audio/mpeg">
+        </audio>
+
+        <audio id="sonidoFinal" preload="auto">
+            <source src="Sonido de Victoria de un Juego para tus vídeos - Efecto de Sonido [p2fiWcDgb80].mp3"
+                type="audio/mpeg">
+        </audio>
+
+        <!-- Sonido para los botones normales -->
+        <audio id="sonidoBoton" preload="auto">
+            <source src="universfield-bubble-pop-06-351337.mp3" type="audio/mpeg">
+        </audio>
+
 
         <div id="confeti"></div>
 
@@ -207,13 +261,20 @@
             <h2>¿Me amas? 🥺</h2>
 
             <div>
-                <button class="si" onclick="decirSi()">¡SIIII!💖</button>
+
+                <button class="si" onclick="reproducirSonidoBoton(); decirSi()">
+                    ¡SÍ! 💖
+                </button>
+
             </div>
 
             <div id="zonaNo">
                 <button id="no" class="no" onpointerenter="escapar()" ontouchstart="escapar()" onclick="escapar()">
-                    Noo
+                    Noo que te pasa
                 </button>
+            </div>
+            <div>
+                <button onclick="activarMusica()">Pon musiquita</button>
             </div>
         </section>
 
@@ -227,8 +288,8 @@
                 <p>Gracias por estos 3 meses tan bonitos.</p>
                 <p>Mi corazoncito se llena de alegría al verte</p>
 
-                <button class="principal" onclick="prepararJuego()">
-                    Toma un jueguito por ser la mejor novia 
+                <button class="si" onclick="reproducirSonidoBoton(); prepararJuego()">
+                    Toma un jueguito por ser la mejor novia
                 </button>
             </div>
         </section>
@@ -244,15 +305,15 @@
                 <p>Tienes <b>30 segundos</b>.</p>
                 <p>Cada toque vale <b>10 puntos</b>.</p>
 
-                <button id="comenzar" onclick="empezarJuego()">
-                    Comenzar😱😱😱
+                <button class="si" onclick="reproducirSonidoBoton(); empezarJuego()">
+                    Comenzar😱😱
                 </button>
             </div>
         </section>
 
         <!-- PANTALLA 4: JUEGO -->
         <section id="juego" class="pantalla">
-            <h2>¡Atrapa el corazón! 💗</h2>
+            <h2>Atrapa el corazón 😛😛</h2>
 
             <div class="marcador">
                 <span>Puntos: <b id="puntos">0</b></span>
@@ -260,10 +321,10 @@
             </div>
 
             <div id="zonaJuego">
-                <button id="objetivo" onclick="sumarPuntos()">❤️</button>
+               <button id="objetivo" onclick="reproducirSonidoBoton(); sumarPuntos()">❤️</button>
             </div>
 
-            <p>Rápido, mi amorrr 😘</p>
+            <p>Rápido, mi amorrr </p>
         </section>
 
         <!-- PANTALLA 5: RESULTADO -->
@@ -276,15 +337,15 @@
                 <h2>Tu puntuación final:</h2>
                 <h1 id="resultado">0 puntos</h1>
 
-                <p>¡Eres la mejor novia del mundo! 🥰</p>
-                <p>Cada segundo contigo es un regalo. ❤️</p>
+                <p>Eres la mejor novia del mundooo</p>
+                <p>Cada segundo contigo es un regalitoo. ❤️</p>
 
-                <button class="principal" onclick="volverInicio()">
-                    Volver al inicio 💗
+                <button class="principal" onclick="reproducirSonidoBoton(); volverInicio()">
+                    Volver al principio
                 </button>
 
-                <button class="no" onclick="prepararJuego()">
-                    Jugar de nuevo❤️
+                <button class="no" onclick="reproducirSonidoBoton(); prepararJuego()">
+                    Jugar de nuevo😛😛
                 </button>
             </div>
         </section>
@@ -294,6 +355,33 @@
             let segundos = 30;
             let reloj;
             let jugando = false;
+
+            function reproducirSonidoBoton() {
+                let sonido = document.getElementById("sonidoBoton");
+                sonido.currentTime = 0;
+                sonido.play();
+            }
+
+            function reproducirSonidoCorazon() {
+                let sonido = document.getElementById("sonidoCorazon");
+                sonido.currentTime = 0;
+                sonido.play();
+            }
+
+            function activarMusica() {
+                let musica = document.getElementById("musica");
+
+                musica.volume = 0.35;
+
+                musica.play()
+                    .then(() => {
+                        console.log("La música está sonando");
+                    })
+                    .catch(error => {
+                        console.log("Error al reproducir:", error);
+                    });
+            }
+
 
             // Cambiar de pantalla
             function mostrarPantalla(id) {
@@ -407,6 +495,10 @@
                 jugando = false;
                 clearInterval(reloj);
 
+                let sonido = document.getElementById("sonidoFinal");
+                sonido.currentTime = 0;
+                sonido.play();
+
                 document.getElementById("objetivo").style.display = "none";
                 document.getElementById("resultado").textContent = puntos + " puntos";
 
@@ -424,6 +516,34 @@
                 mostrarPantalla("inicio");
                 escapar();
             }
+
+            function crearBurbujas(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    let burbuja = document.createElement("span");
+
+                    burbuja.className = "burbuja";
+
+                    let tamano = Math.random() * 12 + 8;
+
+                    burbuja.style.width = tamano + "px";
+                    burbuja.style.height = tamano + "px";
+                    burbuja.style.left = (x + Math.random() * 50 - 25) + "px";
+                    burbuja.style.top = (y + Math.random() * 50 - 25) + "px";
+
+                    document.body.appendChild(burbuja);
+
+                    setTimeout(function () {
+                        burbuja.remove();
+                    }, 600);
+                }
+            }
+
+            document.addEventListener("click", function (evento) {
+                if (evento.target.closest("button")) {
+                    crearBurbujas(evento.clientX, evento.clientY);
+                }
+            });
+
         </script>
 
     </body>
